@@ -1,16 +1,17 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-const dotenv = require('dotenv');
+const dotenv = require('dotenv'); 
 const path = require('path');
 const restify = require('restify');
 
 // Import required bot services.
 // See https://aka.ms/bot-services to learn more about the different parts of a bot.
-const { BotFrameworkAdapter } = require('botbuilder');
+const { BotFrameworkAdapter, ConversationState, MemoryStorage, UserState } = require('botbuilder');
 
 // This bot's main dialog.
-const { EchoBot } = require('./bot');
+const { MyBot } = require('./bot');
+const { MainDialog } = require('./dialogs/MainDialog');
 
 // Import required bot configuration.
 const ENV_FILE = path.join(__dirname, '.env');
@@ -41,13 +42,20 @@ adapter.onTurnError = async (context, error) => {
     await context.sendActivity(`Oops. Something went wrong!`);
 };
 
+// Define the state store for your bot.
+const memoryStorage = new MemoryStorage();
+// Create conversation state with in-memory storage provider.
+const conversationState = new ConversationState(memoryStorage);
+const userState = new UserState(memoryStorage);
+
 // Create the main dialog.
-const bot = new EchoBot();
+const dialog = new MainDialog(userState);
+const myBot = new MyBot(conversationState, userState, dialog);
 
 // Listen for incoming requests.
 server.post('/api/messages', (req, res) => {
     adapter.processActivity(req, res, async (context) => {
         // Route to main dialog.
-        await bot.run(context);
+        await myBot.run(context);
     });
 });
