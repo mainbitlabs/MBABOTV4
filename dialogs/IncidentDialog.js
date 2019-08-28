@@ -5,8 +5,6 @@ const tableSvc = azurest.createTableService(config.storageA, config.accessK);
 const azureTS = require('azure-table-storage-async');
 const { ComponentDialog, WaterfallDialog, ChoicePrompt, ChoiceFactory, TextPrompt } = require('botbuilder-dialogs');
 
-const { UserProfile } = require('../userProfile');
-
 const INCIDENT_DIALOG = "INCIDENT_DIALOG";
 const CHOICE_PROMPT = "CHOICE_PROMPT";
 const TEXT_PROMPT = "TEXT_PROMPT";
