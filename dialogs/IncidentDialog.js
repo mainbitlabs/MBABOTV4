@@ -2,7 +2,6 @@ const config = require('../config');
 var nodeoutlook = require('nodejs-nodemailer-outlook');
 const azurest = require('azure-storage');
 const tableSvc = azurest.createTableService(config.storageA, config.accessK);
-const azureTS = require('azure-table-storage-async');
 const { ComponentDialog, WaterfallDialog, ChoicePrompt, ChoiceFactory, TextPrompt } = require('botbuilder-dialogs');
 
 const INCIDENT_DIALOG = "INCIDENT_DIALOG";
@@ -48,6 +47,29 @@ console.log('[IncidentDialog]: choiceStep');
         const motivos = step.result;
         config.motivos = motivos;
 
+        const now = new Date();
+        now.setHours(now.getHours()-5);
+        const dateNow = now.toLocaleString();
+        
+        const entidad = {
+            PartitionKey : {'_': config.asociado, '$':'Edm.String'},
+            RowKey : {'_': config.serie, '$':'Edm.String'},
+            Pospuesto : {'_': dateNow +' '+ config.incidente +' '+ config.motivos+'\n'+ config.pospuesto, '$':'Edm.String'}
+        };
+        
+        const merge = new Promise((resolve, reject) => {
+            // Update Comentarios Azure
+            tableSvc.mergeEntity(config.table1,entidad, function (error, result, response) {
+                if (!error) {
+                    resolve(
+                        console.log(`Incidente de ${config.incidente} actualizado en Azure`)
+                        );
+                } else {
+                    reject(error);
+                }
+            });
+        });
+
         const email = new Promise((resolve, reject) => {
             nodeoutlook.sendEmail({
                 auth: {
@@ -59,14 +81,16 @@ console.log('[IncidentDialog]: choiceStep');
                 html: `<p>El servicio se pospuso por el siguiente motivo:</p> <br> <b>${config.incidente}</b> <br> <b><blockquote>${config.motivos}</blockquote></b> <br> <b>Proyecto: ${config.proyecto}</b>  <br> <b>Serie: ${config.serie}</b> <br> <b>Servicio: ${config.servicio}</b> <br> <b>Localidad: ${config.localidad}</b> <br> <b>Inmueble: ${config.inmueble}</b> <br> <b>Nombre de Usuario: ${config.usuario}</b> <br> <b>Area: ${config.area}</b>`,
                 onError: (e) => reject(console.log(e)),
                 onSuccess: (i) => resolve(console.log(i))
-    
+                
             }
             
             );
             
         });
-      await email;
-      await step.context.sendActivity('Hemos concluido por ahora, tus comentarios serán enviados por correo.');
+        await merge;
+        await email;
+        await step.context.sendActivity('Hemos concluido por ahora, tus comentarios serán enviados por correo.');
+        // TERMINA EL DIÁLOGO
            return await step.endDialog();
     }
 }

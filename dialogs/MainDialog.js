@@ -2,11 +2,13 @@ const config = require('../config');
 const azurest = require('azure-storage');
 const tableSvc = azurest.createTableService(config.storageA, config.accessK);
 const azureTS = require('azure-table-storage-async');
+const { UserProfile } = require('../userProfile');
 
 // Dialogos
 const { UbicacionDialog, UBICACION_DIALOG } = require('./ubicacionDialog');
-const { DocsDialog, DOCS_DIALOG } = require('./DocsDialog');
+const { DocsDialog, DOCS_DIALOG } = require('./DOCS');
 const { IncidentDialog, INCIDENT_DIALOG } = require('./IncidentDialog');
+
 
 const { ChoiceFactory, ChoicePrompt, ComponentDialog, DialogSet, DialogTurnStatus, TextPrompt, WaterfallDialog} = require('botbuilder-dialogs');
 
@@ -20,6 +22,7 @@ const WATERFALL_DIALOG = "WATERFALL_DIALOG";
 
 
 
+
 class MainDialog extends ComponentDialog {
     /**
      * SampleBot defines the core business logic of this bot.
@@ -28,6 +31,7 @@ class MainDialog extends ComponentDialog {
     constructor(userState){
         super(MAIN_DIALOG);
 
+        this.userProfile = userState.createProperty(USER_PROFILE);
         this.addDialog(new DocsDialog());
         this.addDialog(new IncidentDialog());
         this.addDialog(new UbicacionDialog());
@@ -89,6 +93,11 @@ class MainDialog extends ComponentDialog {
         config.inmueble = result.Inmueble._;
         config.usuario = result.NombreUsuario._;
         config.area = result.Area._;
+        config.baja = result.Baja._;
+        config.borrado = result.Borrado._;
+        config.check = result.Check._;
+        config.hoja = result.HojaDeServicio._;
+        config.resguardo = result.Resguardo._;
     
         const msg=(`**Proyecto:** ${result.Proyecto._} \n\n **Número de Serie**: ${result.RowKey._} \n\n **Asociado:** ${result.PartitionKey._}  \n\n  **Descripción:** ${result.Descripcion._} \n\n  **Localidad:** ${result.Localidad._} \n\n  **Inmueble:** ${result.Inmueble._} \n\n  **Servicio:** ${result.Servicio._} \n\n  **Resguardo:** ${result.Resguardo._} \n\n  **Check:** ${result.Check._} \n\n  **Borrado:** ${result.Borrado._} \n\n  **Baja:** ${result.Baja._} \n\n  **Hoja de Servicio:** ${result.HojaDeServicio._}`);
         
