@@ -2,7 +2,6 @@ const config = require('../config');
 const azurest = require('azure-storage');
 const tableSvc = azurest.createTableService(config.storageA, config.accessK);
 const azureTS = require('azure-table-storage-async');
-const { UserProfile } = require('../userProfile');
 
 // Dialogos
 const { UbicacionDialog, UBICACION_DIALOG } = require('./ubicacionDialog');
