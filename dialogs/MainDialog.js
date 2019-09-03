@@ -9,7 +9,7 @@ const { DocsDialog, DOCS_DIALOG } = require('./DOCS');
 const { IncidentDialog, INCIDENT_DIALOG } = require('./IncidentDialog');
 
 
-const { ChoiceFactory, ChoicePrompt, ComponentDialog, DialogSet, DialogTurnStatus, TextPrompt, WaterfallDialog} = require('botbuilder-dialogs');
+const { ChoiceFactory, ChoicePrompt, ComponentDialog, DialogSet, DialogTurnStatus, TextPrompt, WaterfallDialog, ListStyle} = require('botbuilder-dialogs');
 
 const MAIN_DIALOG = 'MAIN_DIALOG';
 const CHOICE_PROMPT = "CHOICE_PROMPT";
@@ -104,7 +104,7 @@ class MainDialog extends ComponentDialog {
         return await step.prompt(CHOICE_PROMPT, {
             prompt: '**¿Esta información es correcta?**',
             choices: ChoiceFactory.toChoices(['Sí', 'No']),
-            style: ListStyle
+            style: ListStyle.list
         });
     }
     async dispatcher(step) {
