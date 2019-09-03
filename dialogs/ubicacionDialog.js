@@ -24,14 +24,10 @@ class UbicacionDialog extends ComponentDialog{
         console.log("[UBICACION_DIALOG]: ubicacionStep");
         
         // await step.context.sendActivity('Por favor comparte tu ubicación');
-        return await step.prompt(
-            ACTIVITY_PROMPT, {
-                prompt: 'Comparte tu ubicación'
-            }
-            );
+        await step.context.sendActivity('Comparte tu ubicación.');
     }
     async guardarStep(step) {
-        console.log(step);
+        console.log(step.context);
         
      const guardar = step.result;
      await step.context.sendActivity('Gracias, hemos guardado tu ubicación.');
