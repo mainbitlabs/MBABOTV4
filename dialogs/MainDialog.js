@@ -72,6 +72,10 @@ class MainDialog extends ComponentDialog {
     }
 
     async asociadoStep(step) {
+        console.log(step
+            
+            );
+        
         step.values.serie = step.result;
         return await step.prompt(TEXT_PROMPT, `¿Cual es tu **clave de asociado**?`);
     }

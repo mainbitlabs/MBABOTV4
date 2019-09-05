@@ -1,4 +1,4 @@
-const { ComponentDialog, WaterfallDialog, TextPrompt, ActivityPrompt } = require('botbuilder-dialogs');
+const { ComponentDialog, WaterfallDialog, TextPrompt, ActivityPrompt, ActivityHandler } = require('botbuilder-dialogs');
 
 const UBICACION_DIALOG = "UBICACION_DIALOG";
 const TEXT_PROMPT = "TEXT_PROMPT";
@@ -22,14 +22,14 @@ class UbicacionDialog extends ComponentDialog{
 
     async ubicacionStep(step) {
         console.log("[UBICACION_DIALOG]: ubicacionStep");
-        
-        // await step.context.sendActivity('Por favor comparte tu ubicación');
-        await step.context.sendActivity('Comparte tu ubicación.');
+        return await step.prompt(CHOICE_PROMPT, {
+            prompt: '**Por favor comparte tu ubicación**',
+            choices: ChoiceFactory.toChoices(['']),
+            style: ListStyle.heroCard
+        });
     }
     async guardarStep(step) {
-        console.log(step.context);
-        
-     const guardar = step.result;
+        console.log(step.context.activity);
      await step.context.sendActivity('Gracias, hemos guardado tu ubicación.');
      return await step.endDialog();
     }
