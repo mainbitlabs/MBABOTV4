@@ -1,15 +1,17 @@
-const { ComponentDialog, WaterfallDialog, TextPrompt, ActivityPrompt, ActivityHandler } = require('botbuilder-dialogs');
+const { ComponentDialog, WaterfallDialog, TextPrompt, ActivityPrompt, ChoicePrompt } = require('botbuilder-dialogs');
 
 const UBICACION_DIALOG = "UBICACION_DIALOG";
 const TEXT_PROMPT = "TEXT_PROMPT";
 const WATERFALL_DIALOG = 'WATERFALL_DIALOG';
 const ACTIVITY_PROMPT = 'ACTIVITY_PROMPT';
+const CHOICE_PROMPT = "CHOICE_PROMPT";
 
 class UbicacionDialog extends ComponentDialog{
     constructor(){
         super(UBICACION_DIALOG);
 
         this.addDialog(new TextPrompt(TEXT_PROMPT));
+        this.addDialog(new ChoicePrompt(CHOICE_PROMPT));
         this.addDialog(new ActivityPrompt(ACTIVITY_PROMPT));
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
             this.ubicacionStep.bind(this),
