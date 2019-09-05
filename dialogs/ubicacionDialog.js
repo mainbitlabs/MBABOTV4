@@ -26,11 +26,19 @@ class UbicacionDialog extends ComponentDialog{
         console.log("[UBICACION_DIALOG]: ubicacionStep");
         return await step.prompt(CHOICE_PROMPT, {
             prompt: '**Por favor comparte tu ubicación**',
-            choices: ChoiceFactory.toChoices([''])
+            choices: ChoiceFactory.toChoices(['']),
+            style: ListStyle.heroCard
         });
     }
     async guardarStep(step) {
-        console.log(step.context.activity);
+        if (!step.context.activity.text && step.context.activity.entities) {
+            const entities = step.context.activity.entities;
+            console.log(entities);
+
+        } else {
+            console.log("No pasa aquí");
+            
+        }
      await step.context.sendActivity('Gracias, hemos guardado tu ubicación.');
      return await step.endDialog();
     }
