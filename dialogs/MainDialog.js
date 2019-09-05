@@ -107,8 +107,7 @@ class MainDialog extends ComponentDialog {
         await step.context.sendActivity(msg);
         return await step.prompt(CHOICE_PROMPT, {
             prompt: '**¿Esta información es correcta?**',
-            choices: ChoiceFactory.toChoices(['Sí', 'No']),
-            style: ListStyle.list
+            choices: ChoiceFactory.toChoices(['Sí', 'No'])
         });
     }
     async dispatcher(step) {
