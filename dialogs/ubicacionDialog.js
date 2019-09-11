@@ -1,4 +1,8 @@
-const { ComponentDialog, WaterfallDialog, TextPrompt, ActivityPrompt, ChoicePrompt, ChoiceFactory } = require('botbuilder-dialogs');
+const config = require('../config');
+const azurest = require('azure-storage');
+const tableSvc = azurest.createTableService(config.storageA, config.accessK);
+
+const { ComponentDialog, WaterfallDialog, TextPrompt, ActivityPrompt, ChoicePrompt, DialogTurnStatus} = require('botbuilder-dialogs');
 
 const UBICACION_DIALOG = "UBICACION_DIALOG";
 const TEXT_PROMPT = "TEXT_PROMPT";
@@ -23,26 +27,55 @@ class UbicacionDialog extends ComponentDialog{
     }
 
     async ubicacionStep(step) {
-        console.log("[UBICACION_DIALOG]: ubicacionStep");
-        return await step.prompt(CHOICE_PROMPT, {
-            prompt: '**Por favor comparte tu ubicación**',
-            choices: ChoiceFactory.toChoices(['']),
-            style: ListStyle.heroCard
-        });
-    }
+        console.log("ubicacionStep");
+       await step.context.sendActivity('**Comparte tu ubicación**');
+       return { status: DialogTurnStatus.waiting };
+}
+    
+
     async guardarStep(step) {
-        if (!step.context.activity.text && step.context.activity.entities) {
-            const entities = step.context.activity.entities;
-            console.log(entities);
-
-        } else {
-            console.log("No pasa aquí");
+console.log("guardarStep");
+     if(step.context.activity.entities){
+                const entities = step.context.activity.entities;
+                config.entities = entities;
+                console.log('_ENTITIES', config.entities);
+                // console.log('_GEO', config.entities[0].geo);
+                // console.log('_LATITUD', config.entities[0].geo.latitude);
+            const now = new Date();
+                now.setHours(now.getHours()-5);
+            const dateNow = now.toLocaleString();
             
-        }
-     await step.context.sendActivity('Gracias, hemos guardado tu ubicación.');
-     return await step.endDialog();
+            const entidad = {
+            PartitionKey : {'_': config.asociado, '$':'Edm.String'},
+            RowKey : {'_': config.serie, '$':'Edm.String'},
+            GPS: {'_': dateNow +' '+ 'https://www.google.com.mx/maps/search/'+ config.entities[0].geo.latitude + "," + config.entities[0].geo.longitude+'\n' + config.gps, '$':'Edm.String'},
+            Latitud: {'_': config.entities[0].geo.latitude, '$':'Edm.String'},
+            Longitud: {'_': config.entities[0].geo.longitude, '$':'Edm.String'}
+
+        };
+        
+                const merge = new Promise((resolve, reject) => {
+            // Update Comentarios Azure
+            tableSvc.mergeEntity(config.table1,entidad, function (error, result, response) {
+                if (!error) {
+                    resolve(
+                        console.log(`GPS actualizado en Azure`)
+                        );
+                } else {
+                    reject(error);
+                }
+            });
+        });
+    await step.context.sendActivity(`**Se ha guardado tu ubicación, hemos terminado por ahora**` );
+    return await step.endDialog();
+    }
+    else{
+        return await step.beginDialog(UBICACION_DIALOG);
     }
 
+
+
+}
 }
 module.exports.UbicacionDialog = UbicacionDialog;
 module.exports.UBICACION_DIALOG = UBICACION_DIALOG;

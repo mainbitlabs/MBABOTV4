@@ -72,9 +72,6 @@ class MainDialog extends ComponentDialog {
     }
 
     async asociadoStep(step) {
-        console.log(step
-            
-            );
         
         step.values.serie = step.result;
         return await step.prompt(TEXT_PROMPT, `¿Cual es tu **clave de asociado**?`);
@@ -101,6 +98,7 @@ class MainDialog extends ComponentDialog {
         config.check = result.Check._;
         config.hoja = result.HojaDeServicio._;
         config.resguardo = result.Resguardo._;
+        config.gps = result.GPS._;
     
         const msg=(`**Proyecto:** ${result.Proyecto._} \n\n **Número de Serie**: ${result.RowKey._} \n\n **Asociado:** ${result.PartitionKey._}  \n\n  **Descripción:** ${result.Descripcion._} \n\n  **Localidad:** ${result.Localidad._} \n\n  **Inmueble:** ${result.Inmueble._} \n\n  **Servicio:** ${result.Servicio._} \n\n  **Resguardo:** ${result.Resguardo._} \n\n  **Check:** ${result.Check._} \n\n  **Borrado:** ${result.Borrado._} \n\n  **Baja:** ${result.Baja._} \n\n  **Hoja de Servicio:** ${result.HojaDeServicio._}`);
         
@@ -137,14 +135,21 @@ class MainDialog extends ComponentDialog {
         }
         if (answer ==='Ubicación') {
             return await step.beginDialog(UBICACION_DIALOG);
+            // await step.context.sendActivity('**Comparte tu ubicación**');
+            // return { status: DialogTurnStatus.waiting };
+            // return await step.beginDialog(UBICACION_DIALOG);
+        // console.log('_ENTITIES', config.entities);
+        // console.log('_GEO', config.entities[0].geo);
+        // console.log('_LATITUD', config.entities[0].geo.latitude);
+        // await step.context.sendActivity('Graacias, Hemos guardado tu ubicación'); 
         } 
         if (answer ==='Documentación') {
             return await step.beginDialog(DOCS_DIALOG);
         } 
         if (answer ==='Incidente') {
             return await step.beginDialog(INCIDENT_DIALOG);
-        } 
-    return await stepContext.endDialog();
+        }
+    return await step.endDialog();
 
     }
 }
