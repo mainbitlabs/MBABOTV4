@@ -40,6 +40,11 @@ adapter.onTurnError = async (context, error) => {
     console.error(`\n [onTurnError]: ${ error }`);
     // Send a message to the user
     await context.sendActivity(`Oops. Something went wrong!`);
+    // Clear out state
+    await conversationState.load(context);
+    await conversationState.clear(context);
+    // Save state changes.
+    await conversationState.saveChanges(context);
 };
 
 // Define the state store for your bot.
