@@ -10,20 +10,21 @@ const {ActivityTypes} = require ('botbuilder');
  */
 class CancelAndHelpDialog extends ComponentDialog {
 
-    async onContinueDialog(innerDc) {
-        const result = await this.interrupt(innerDc);
+    async onContinueDialog(step) {
+        const result = await this.interrupt(step);
 
         if (result) {
             return result;
         }
-        return await super.onContinueDialog(innerDc);
+        return await super.onContinueDialog(step);
     }
 
 
-    async interrupt(innerDc) {
-        if (innerDc.context.activity.text) {
+    async interrupt(step) {
+        if (step.context.activity.text) {
+            console.log(step.context.activity.text);
             
-            const text = innerDc.context.activity.text.toLowerCase();
+            const text = step.context.activity.text.toLowerCase();
     
             switch (text) {
                 case 'ayuda':
@@ -31,7 +32,7 @@ class CancelAndHelpDialog extends ComponentDialog {
                     const mainbit = { type: ActivityTypes.Message };
                     mainbit.attachments = [this.getMainbit()];
                     mainbit.text = 'Hola, puedo ayudarte a enviar documentación, checar tu entrada al inmueble y enviar incidentes sobre el servicio.'
-                    await innerDc.context.sendActivity(mainbit);
+                    await step.context.sendActivity(mainbit);
                     return { status: DialogTurnStatus.waiting };
                     
                 case 'bot':
@@ -40,7 +41,7 @@ class CancelAndHelpDialog extends ComponentDialog {
                     const bot = { type: ActivityTypes.Message };
                    bot.attachments = [this.getBot()];
                     bot.text = 'Hola, puedo ayudarte a enviar documentación, checar tu entrada al inmueble y enviar incidentes sobre el servicio.'
-                    await innerDc.context.sendActivity(bot);
+                    await step.context.sendActivity(bot);
                     return { status: DialogTurnStatus.waiting };
                      
                 case 'cancel':
@@ -48,12 +49,12 @@ class CancelAndHelpDialog extends ComponentDialog {
                 case 'salir':
                     console.log('[cancelAndHelpDialog]: interrupt - "cancelar" ');
 
-                    await innerDc.context.sendActivity('Cancelando...');
-                    return await innerDc.cancelAllDialogs();
+                    await step.context.sendActivity('Cancelando...');
+                    return await step.cancelAllDialogs();
 
                 case 'help':
                 case '?':
-                    await innerDc.context.sendActivity('[ This is where to send sample help to the user... ]');
+                    await step.context.sendActivity('[ This is where to send sample help to the user... ]');
                     return { status: DialogTurnStatus.waiting };
             }
         } else {

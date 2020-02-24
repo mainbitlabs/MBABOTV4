@@ -190,7 +190,7 @@ class DocsDialog extends ComponentDialog {
             case 'Sí':
                 return await step.beginDialog(DOCS_DIALOG, details);
             case 'No':
-            await step.context.sendActivity('De acuerdo, hemos terminado por ahora.');             
+            await step.context.sendActivity('De acuerdo.');             
             // TERMINA EL DIÁLOGO
             return await step.endDialog();  
             default:
