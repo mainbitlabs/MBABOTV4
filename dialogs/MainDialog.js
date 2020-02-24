@@ -41,7 +41,7 @@ class MainDialog extends CancelAndHelpDialog {
 
     async serieStep(step){
         console.log('[mainDialog]:serieStep');
-    await step.context.sendActivity('Si tienes algun problema puedes cancelar en cualquier momento escribiendo la palabra **"```cancelar```"**.');
+    await step.context.sendActivity('Si tienes algun problema puedes reiniciar este bot en cualquier momento escribiendo la palabra **cancelar**.');
     return await step.prompt(TEXT_PROMPT, `Por favor, **escribe el Número de Serie del equipo.**`);
     }
 
