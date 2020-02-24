@@ -27,7 +27,8 @@ class UbicacionDialog extends ComponentDialog{
     }
 
     async ubicacionStep(step) {
-        console.log("ubicacionStep");
+        console.log("[ubicacionDialog]: ubicacionStep");
+        const details = step.options;
        await step.context.sendActivity('**Comparte tu ubicación**');
        return { status: DialogTurnStatus.waiting };
 }
@@ -35,42 +36,43 @@ class UbicacionDialog extends ComponentDialog{
 
     async guardarStep(step) {
 console.log("guardarStep");
-     if(step.context.activity.entities){
-                const entities = step.context.activity.entities;
-                config.entities = entities;
-                console.log('_ENTITIES', config.entities);
-                // console.log('_GEO', config.entities[0].geo);
-                // console.log('_LATITUD', config.entities[0].geo.latitude);
+const details = step.options;
+    if(step.context.activity.entities){
+            const entities = step.context.activity.entities;
+            details.entities = entities;
+            console.log('_ENTITIES', details.entities);
+            console.log('_GEO', details.entities[0].geo);
+            console.log('_LATITUD', details.entities[0].geo.latitude);
             const now = new Date();
                 now.setHours(now.getHours()-5);
             const dateNow = now.toLocaleString();
             
             const entidad = {
-            PartitionKey : {'_': config.asociado, '$':'Edm.String'},
-            RowKey : {'_': config.serie, '$':'Edm.String'},
-            GPS: {'_': dateNow +' '+ 'https://www.google.com.mx/maps/search/'+ config.entities[0].geo.latitude + "," + config.entities[0].geo.longitude+'\n' + config.gps, '$':'Edm.String'},
-            Latitud: {'_': config.entities[0].geo.latitude, '$':'Edm.String'},
-            Longitud: {'_': config.entities[0].geo.longitude, '$':'Edm.String'}
-
-        };
+                PartitionKey : {'_': details.asociado, '$':'Edm.String'},
+                RowKey : {'_': details.serie, '$':'Edm.String'},
+                GPS: {'_': dateNow +' '+ 'https://www.google.com.mx/maps/search/'+ details.entities[0].geo.latitude + "," + details.entities[0].geo.longitude+'\n' + details.gps, '$':'Edm.String'},
+                Latitud: {'_': details.entities[0].geo.latitude, '$':'Edm.String'},
+                Longitud: {'_': details.entities[0].geo.longitude, '$':'Edm.String'}
+            };
         
-                const merge = new Promise((resolve, reject) => {
-            // Update Comentarios Azure
-            tableSvc.mergeEntity(config.table1,entidad, function (error, result, response) {
-                if (!error) {
-                    resolve(
-                        console.log(`GPS actualizado en Azure`)
-                        );
-                } else {
-                    reject(error);
-                }
+            const merge = new Promise((resolve, reject) => {
+                // Update Comentarios Azure
+                tableSvc.mergeEntity(config.table1, entidad, function (error, result, response) {
+                    if (!error) {
+                        resolve(
+                            console.log(`GPS actualizado en Azure`)
+                            );
+                    } else {
+                        reject(error);
+                    }
+                });
             });
-        });
-    await step.context.sendActivity(`**Se ha guardado tu ubicación, hemos terminado por ahora**` );
-    return await step.endDialog();
+        await merge;
+        await step.context.sendActivity(`**Se ha guardado tu ubicación, hemos terminado por ahora**` );
+        return await step.endDialog();
     }
     else{
-        return await step.beginDialog(UBICACION_DIALOG);
+        return await step.beginDialog(UBICACION_DIALOG, details);
     }
 
 

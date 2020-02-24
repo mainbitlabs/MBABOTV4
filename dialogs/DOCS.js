@@ -30,10 +30,11 @@ class DocsDialog extends ComponentDialog {
 
     async choiceStep(step) {
     console.log('[DocsDialog]: choiceStep');
+    const details = step.options;
     var optsbutton = [];
     var Opts = {};
     const query = new Promise ((resolve, reject) => {
-        tableSvc.retrieveEntity(config.table4, "Proyecto", config.proyecto,function(error, result, response) {
+        tableSvc.retrieveEntity(config.table4, "Proyecto", details.proyecto,function(error, result, response) {
                     if (!error) {
                         if (result.Baja._ == "X") {
                             Opts.Baja="Baja";
@@ -56,7 +57,7 @@ class DocsDialog extends ComponentDialog {
                             optsbutton.push(Opts.Hoja);
                         }
                         resolve(
-                            console.log(`Documentos de ${config.proyecto} encontrados en Azure`)
+                            console.log(`Documentos de ${details.proyecto} encontrados en Azure`)
                         );
                     } else {
                     reject(console.log(error));
@@ -72,48 +73,48 @@ class DocsDialog extends ComponentDialog {
 
     async adjuntaStep(step) {
         const docAttach = step.result.value;
-        config.docAttach = docAttach;
+        details.docAttach = docAttach;
         switch (docAttach) {
             case "Baja": 
-                if (config.baja == "Aprobado") {
+                if (details.baja == "Aprobado") {
                     await step.context.sendActivity("**No puedes adjuntar el archivo, este documento ya ha sido aprobado.** \n**Hemos concluido por ahora.**");
                     return await step.endDialog();
                 } else {
                     
-                    return await step.prompt(ATTACH_PROMPT,`Adjunta aquí ${config.docAttach}`);
+                    return await step.prompt(ATTACH_PROMPT,`Adjunta aquí ${details.docAttach}`);
                 }
             case "Borrado":
-                if (config.borrado == "Aprobado") {
+                if (details.borrado == "Aprobado") {
                     await step.context.sendActivity("**No puedes adjuntar el archivo, este documento ya ha sido aprobado.** \n**Hemos concluido por ahora.**");
                     return await step.endDialog();
                 } else {
                     
-                    return await step.prompt(ATTACH_PROMPT,`Adjunta aquí ${config.docAttach}`);
+                    return await step.prompt(ATTACH_PROMPT,`Adjunta aquí ${details.docAttach}`);
                 }
             case "Check":
-                if (config.check == "Aprobado") {
+                if (details.check == "Aprobado") {
                     await step.context.sendActivity("**No puedes adjuntar el archivo, este documento ya ha sido aprobado.** \n**Hemos concluido por ahora.**");
                     return await step.endDialog();
                 } else {
                     
-                    return await step.prompt(ATTACH_PROMPT,`Adjunta aquí ${config.docAttach}`);
+                    return await step.prompt(ATTACH_PROMPT,`Adjunta aquí ${details.docAttach}`);
                 }
                 
             case "HojaDeServicio":
-                if (config.hoja == "Aprobado") {
+                if (details.hoja == "Aprobado") {
                     await step.context.sendActivity("**No puedes adjuntar el archivo, este documento ya ha sido aprobado.** \n**Hemos concluido por ahora.**");
                     return await step.endDialog();
                 } else {
                     
-                    return await step.prompt(ATTACH_PROMPT,`Adjunta aquí ${config.docAttach}`);
+                    return await step.prompt(ATTACH_PROMPT,`Adjunta aquí ${details.docAttach}`);
                 }
             case "Resguardo":
-                if (config.resguardo == "Aprobado") {
+                if (details.resguardo == "Aprobado") {
                     await step.context.sendActivity("**No puedes adjuntar el archivo, este documento ya ha sido aprobado.** \n**Hemos concluido por ahora.**");
                     return await step.endDialog();
                 } else {
                     
-                    return await step.prompt(ATTACH_PROMPT,`Adjunta aquí ${config.docAttach}`);
+                    return await step.prompt(ATTACH_PROMPT,`Adjunta aquí ${details.docAttach}`);
                 }
                 
             default:
@@ -141,7 +142,7 @@ class DocsDialog extends ComponentDialog {
                          var buffer = Buffer.from(response, 'base64');
                          const blob = new Promise ((resolve, reject) => {
 
-                             blobService.createBlockBlobFromText(config.blobcontainer, config.proyecto +'_'+ config.serie +'_'+ config.docAttach +'_'+ config.asociado +'.'+ ctype, buffer,  function(error, result, response) {
+                             blobService.createBlockBlobFromText(config.blobcontainer, details.proyecto +'_'+ details.serie +'_'+ details.docAttach +'_'+ details.asociado +'.'+ ctype, buffer,  function(error, result, response) {
                                  if (!error) {
                                      console.log("_Archivo subido al Blob Storage",response)
                                      resolve();
@@ -162,7 +163,7 @@ class DocsDialog extends ComponentDialog {
                         console.log(error); //Exepection error....
                     });
                     // await blob;
-                    await step.context.sendActivity(`El archivo **${config.proyecto}_${config.serie}_${config.docAttach}_${config.asociado}.${ctype}** se ha subido correctamente`);
+                    await step.context.sendActivity(`El archivo **${details.proyecto}_${details.serie}_${details.docAttach}_${details.asociado}.${ctype}** se ha subido correctamente`);
                     return await step.prompt(CHOICE_PROMPT, {
                         prompt: '¿Deseas adjuntar Evidencia o Documentación?',
                         choices: ChoiceFactory.toChoices(['Sí','No'])
@@ -175,11 +176,12 @@ class DocsDialog extends ComponentDialog {
     }
 
     async dispatcherStep(step) {
+        const details = step.options;
         const selection = step.result.value;
         switch (selection) {
             
             case 'Sí':
-                return await step.beginDialog(DOCS_DIALOG);
+                return await step.beginDialog(DOCS_DIALOG, details);
             case 'No':
             await step.context.sendActivity('De acuerdo, hemos terminado por ahora.');             
             // TERMINA EL DIÁLOGO
