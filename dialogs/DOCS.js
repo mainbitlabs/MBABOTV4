@@ -34,7 +34,7 @@ class DocsDialog extends ComponentDialog {
     var optsbutton = [];
     var Opts = {};
     const query = new Promise ((resolve, reject) => {
-        tableSvc.retrieveEntity(config.table4, "Proyecto", details.proyecto,function(error, result, response) {
+        tableSvc.retrieveEntity(config.table4, "Proyecto", details.proyecto ,function(error, result, response) {
                     if (!error) {
                         if (result.Baja._ == "X") {
                             Opts.Baja="Baja";
@@ -73,6 +73,9 @@ class DocsDialog extends ComponentDialog {
 
     async adjuntaStep(step) {
         console.log('[DocsDialog]: adjuntaStep');
+        const details = step.options;
+        console.log(details);
+        
         const docAttach = step.result.value;
         details.docAttach = docAttach;
         switch (docAttach) {
