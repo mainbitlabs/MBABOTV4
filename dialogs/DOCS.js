@@ -132,7 +132,7 @@ class DocsDialog extends ComponentDialog {
      */
     async attachStep(step) {
         console.log('[DocsDialog]: attachStep');
-
+        const details = step.options;
         console.log(step.context.activity.attachments);
         
         if (step.context.activity.attachments && step.context.activity.attachments.length > 0) {
