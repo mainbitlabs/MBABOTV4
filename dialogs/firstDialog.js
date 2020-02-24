@@ -42,11 +42,13 @@ class FirstDialog extends ComponentDialog {
     }
 
     async firstStep(stepContext) {
-        console.log('[firstDialog]: firstStep ')
+        console.log('[firstDialog]: firstStep ');
         return await stepContext.beginDialog(MAIN_DIALOG);
     }
 
     async finalStep(stepContext) {
+        console.log('[firstDialog]: finalStep ');
+
         if (stepContext.result) {
             const result = stepContext.result;
 

@@ -1,6 +1,7 @@
 const config = require('../config');
 const azurest = require('azure-storage');
 const tableSvc = azurest.createTableService(config.storageA, config.accessK);
+const moment = require('moment-timezone');
 
 const { ComponentDialog, WaterfallDialog, TextPrompt, ActivityPrompt, ChoicePrompt, DialogTurnStatus} = require('botbuilder-dialogs');
 
@@ -35,14 +36,17 @@ class UbicacionDialog extends ComponentDialog{
     
 
     async guardarStep(step) {
-console.log("guardarStep");
-const details = step.options;
-    if(step.context.activity.entities){
+        console.log("[ubicacionDialog]: guardarStep");
+
+        const details = step.options;
+        if(step.context.activity.entities){
             const entities = step.context.activity.entities;
             details.entities = entities;
             console.log('_ENTITIES', details.entities);
             console.log('_GEO', details.entities[0].geo);
             console.log('_LATITUD', details.entities[0].geo.latitude);
+            moment.locale('es');
+            const cdmx = moment().tz("America/Mexico_City");
             const now = new Date();
                 now.setHours(now.getHours()-5);
             const dateNow = now.toLocaleString();
@@ -50,7 +54,7 @@ const details = step.options;
             const entidad = {
                 PartitionKey : {'_': details.asociado, '$':'Edm.String'},
                 RowKey : {'_': details.serie, '$':'Edm.String'},
-                GPS: {'_': dateNow +' '+ 'https://www.google.com.mx/maps/search/'+ details.entities[0].geo.latitude + "," + details.entities[0].geo.longitude+'\n' + details.gps, '$':'Edm.String'},
+                GPS: {'_': cdmx.format('LLL') +' '+ 'https://www.google.com.mx/maps/search/'+ details.entities[0].geo.latitude + "," + details.entities[0].geo.longitude+'\n' + details.gps, '$':'Edm.String'},
                 Latitud: {'_': details.entities[0].geo.latitude, '$':'Edm.String'},
                 Longitud: {'_': details.entities[0].geo.longitude, '$':'Edm.String'}
             };
@@ -67,10 +71,10 @@ const details = step.options;
                     }
                 });
             });
-        await merge;
-        await step.context.sendActivity(`**Se ha guardado tu ubicación, hemos terminado por ahora**` );
-        return await step.endDialog();
-    }
+            await merge;
+            await step.context.sendActivity(`**Se ha guardado tu ubicación.**` );
+            return await step.endDialog();
+        }
     else{
         return await step.beginDialog(UBICACION_DIALOG, details);
     }

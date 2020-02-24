@@ -72,6 +72,7 @@ class DocsDialog extends ComponentDialog {
     }
 
     async adjuntaStep(step) {
+        console.log('[DocsDialog]: adjuntaStep');
         const docAttach = step.result.value;
         details.docAttach = docAttach;
         switch (docAttach) {
@@ -127,6 +128,8 @@ class DocsDialog extends ComponentDialog {
      * @param {Object} step
      */
     async attachStep(step) {
+        console.log('[DocsDialog]: attachStep');
+
         console.log(step.context.activity.attachments);
         
         if (step.context.activity.attachments && step.context.activity.attachments.length > 0) {
@@ -176,6 +179,7 @@ class DocsDialog extends ComponentDialog {
     }
 
     async dispatcherStep(step) {
+        console.log('[DocsDialog]: dispatcherStep');
         const details = step.options;
         const selection = step.result.value;
         switch (selection) {

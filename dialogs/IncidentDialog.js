@@ -3,6 +3,7 @@ var nodeoutlook = require('nodejs-nodemailer-outlook');
 const azurest = require('azure-storage');
 const tableSvc = azurest.createTableService(config.storageA, config.accessK);
 const { ComponentDialog, WaterfallDialog, ChoicePrompt, ChoiceFactory, TextPrompt } = require('botbuilder-dialogs');
+const moment = require('moment-timezone');
 
 const INCIDENT_DIALOG = "INCIDENT_DIALOG";
 const CHOICE_PROMPT = "CHOICE_PROMPT";
@@ -24,7 +25,7 @@ class IncidentDialog extends ComponentDialog {
     }
 
     async choiceStep(step) {
-console.log('[IncidentDialog]: choiceStep');
+        console.log('[IncidentDialog]: choiceStep');
 
         return await step.prompt(CHOICE_PROMPT, {
             prompt: '**Elije el motivo por el cual se pospone el servicio.**',
@@ -33,6 +34,7 @@ console.log('[IncidentDialog]: choiceStep');
     }
 
     async incidenteStep(step) {
+        console.log('[IncidentDialog]: incidenteStep');
         const details = step.options;
         const incidente = step.result.value;
         details.incidente = incidente;
@@ -44,6 +46,9 @@ console.log('[IncidentDialog]: choiceStep');
     }
 
     async correoStep(step) {
+        console.log('[IncidentDialog]: correoStep');
+        moment.locale('es');
+        const cdmx = moment().tz("America/Mexico_City");
         const details = step.options;
         console.log(details.proyecto);
         const motivos = step.result;
@@ -56,7 +61,7 @@ console.log('[IncidentDialog]: choiceStep');
         const entidad = {
             PartitionKey : {'_': details.asociado, '$':'Edm.String'},
             RowKey : {'_': details.serie, '$':'Edm.String'},
-            Pospuesto : {'_': dateNow +' '+ details.incidente +' '+ details.motivos+'\n'+ details.pospuesto, '$':'Edm.String'}
+            Pospuesto : {'_': cdmx.format('LLL') +' '+ details.incidente +' '+ details.motivos+'\n'+ details.pospuesto, '$':'Edm.String'}
         };
         
         const merge = new Promise((resolve, reject) => {

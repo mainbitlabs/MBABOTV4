@@ -23,6 +23,7 @@
         "botbuilder-dialogs": "^4.5.3",
         "dotenv": "^7.0.0",
         "image-to-base64": "^2.0.1",
+        "moment-timezone": "^0.5.28",
         "nodejs-nodemailer-outlook": "^1.1.0",
         "restify": "~8.3.3"
     },
