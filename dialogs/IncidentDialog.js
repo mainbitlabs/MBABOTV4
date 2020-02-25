@@ -83,7 +83,7 @@ class IncidentDialog extends ComponentDialog {
                     user: `${config.email1}`,
                     pass: `${config.pass}`,
                 }, from: `${config.email1}`,
-                to: `${config.email3}`,
+                to: `${config.email1}, ${config.email2}, ${config.email3}, ${config.email4}`,
                 subject: `${details.proyecto} Incidente de ${details.incidente}: ${details.serie} / ${details.servicio}`,
                 html: `<p>El servicio se pospuso por el siguiente motivo:</p> <br> <b>${details.incidente}</b> <br> <b><blockquote>${details.motivos}</blockquote></b> <br> <b>Proyecto: ${details.proyecto}</b>  <br> <b>Serie: ${details.serie}</b> <br> <b>Servicio: ${details.servicio}</b> <br> <b>Localidad: ${details.localidad}</b> <br> <b>Inmueble: ${details.inmueble}</b> <br> <b>Nombre de Usuario: ${details.usuario}</b> <br> <b>Area: ${details.area}</b>`,
                 onError: (e) => reject(console.log(e)),
