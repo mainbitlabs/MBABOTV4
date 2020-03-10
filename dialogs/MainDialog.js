@@ -48,14 +48,18 @@ class MainDialog extends CancelAndHelpDialog {
     async asociadoStep(step) {
         console.log('[mainDialog]:asociadoStep');
         const details = step.options;
-        details.serie = step.result;
+        const str = step.result;
+        var serie = str.replace(/\s/g,'');
+        details.serie = serie;
         return await step.prompt(TEXT_PROMPT, `¿Cual es tu **clave de asociado**?`);
     }
 
     async infoConfirmStep(step) {
         console.log('[mainDialog]:infoConfirmStep');
         const details = step.options;
-        details.asociado = step.result;
+        const str = step.result;
+        var asociado = str.replace(/\s/g,'');
+        details.asociado = asociado;
         const parkey = details.asociado;
         const rowkey = details.serie;
         // console.log(details);
