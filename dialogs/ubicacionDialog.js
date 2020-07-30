@@ -37,7 +37,8 @@ class UbicacionDialog extends ComponentDialog{
 
     async guardarStep(step) {
         console.log("[ubicacionDialog]: guardarStep");
-
+        console.log(step);
+        
         const details = step.options;
         if(step.context.activity.entities){
             const entities = step.context.activity.entities;
